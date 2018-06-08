@@ -3,6 +3,8 @@ package util;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 
@@ -11,7 +13,7 @@ public class ImageUtils {
         BufferedImage image = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                image.setRGB(i,j,rgb);
+                image.setRGB(j,i,rgb);
             }
         }
         return image;
@@ -35,5 +37,12 @@ public class ImageUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static BufferedImage deepCopy(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(bi.getRaster().createCompatibleWritableRaster());
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 }

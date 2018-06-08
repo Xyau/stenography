@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class Utils {
+
     public static int encodeInLowestBit(byte[] msg, int payload, int bitsToUse) {
         Byte.toString( msg[1]);
         return 1;
@@ -87,6 +88,9 @@ public class Utils {
         return payload;
     }
 
+    public static int byteToInt(byte b){
+        return 0xFF&b;
+    }
 
     public static void encodeInImage(BufferedImage image, byte[] payload, int bitsToUse){
         for (int i = 0; i < bitsToUse; i++) {
@@ -121,13 +125,21 @@ public class Utils {
     }
 
     public static void print(byte b){
-        System.out.println(Integer.toBinaryString(b));
+        System.out.println(Integer.toBinaryString(byteToInt(b)));
     }
     
     public static void print(byte[] bytes){
         StringBuilder stringBuilder = new StringBuilder(32);
         for (int i = 0; i < bytes.length; i++) {
-            stringBuilder.append(Integer.toBinaryString(bytes[i])).append(" ");
+            stringBuilder.append(bytes[i]).append(" ");
+        }
+        System.out.println(stringBuilder.toString());
+    }
+
+    public static void print(Object[] objects){
+        StringBuilder stringBuilder = new StringBuilder(32);
+        for (int i = 0; i < objects.length; i++) {
+            stringBuilder.append(objects[i]).append(" ");
         }
     }
 }
