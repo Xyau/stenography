@@ -74,11 +74,13 @@ public class Encoder {
     /**
      * This encodes some bits of the payload into an int, without changing the original too much
      */
+    public static boolean LEFT_TO_RIGHT = false;
     public int encodeRGB(int offset, byte[] payload, int bitsToUse, int originalRGB){
         int alteredRGB = originalRGB;
         for (int i = 0; i < 3; i++) {
-            alteredRGB = alteredRGB & ~getMask(bitsToUse,2-i);
-            alteredRGB = alteredRGB |(decompressBits(offset,bitsToUse,payload)<<(8*(2-i)));
+            alteredRGB = alteredRGB & ~getMask(bitsToUse,LEFT_TO_RIGHT?2-i:i);
+            int data = (decompressBits(offset,bitsToUse,payload)<<(8*(LEFT_TO_RIGHT?2-i:i)));
+            alteredRGB = alteredRGB | data;
             offset+=bitsToUse;
         }
         return alteredRGB;
@@ -87,9 +89,9 @@ public class Encoder {
     public int decodeRGB(int msg, int bitsToUSe){
         int payload=0;
         for (int i = 0; i < 3; i++) {
-            int bits = msg & getMask(bitsToUSe,i);
-            bits = bits >> (8*i);
-            payload = payload | (bits<<(bitsToUSe*i));
+            int bits = msg & getMask(bitsToUSe,LEFT_TO_RIGHT?i:2-i);
+            bits = bits >> (8*(LEFT_TO_RIGHT?i:2-i));
+            payload = payload | (bits<<(bitsToUSe*(LEFT_TO_RIGHT?2-i:i)));
         }
         return payload;
     }

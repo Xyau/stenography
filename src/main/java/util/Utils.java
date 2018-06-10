@@ -5,7 +5,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 
 public class Utils {
@@ -56,6 +58,14 @@ public class Utils {
         StringBuilder stringBuilder = new StringBuilder(32);
         for (int i = 0; i < objects.length; i++) {
             stringBuilder.append(objects[i]).append(" ");
+        }
+    }
+
+    public static void writeToFile(String s, String path){
+        try (PrintWriter out = new PrintWriter(path)) {
+            out.println(s);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }

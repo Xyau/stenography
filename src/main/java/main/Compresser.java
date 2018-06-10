@@ -2,7 +2,7 @@ package main;
 
 public class Compresser {
     public static int getMask(int bitsToUse, int byteNumber){
-        int[] bits = {1,3,7,16,31,63,127};
+        int[] bits = {1,3,7,15,31,63,127};
         return bits[bitsToUse-1]<<(8*byteNumber);
     }
 

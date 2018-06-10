@@ -3,9 +3,11 @@ package util;
 import main.Encoder;
 import main.FileEncoder;
 import org.junit.jupiter.api.Test;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -34,35 +36,41 @@ public class FileEncoderTest {
         }
     }
 
-    @Test
-    public void testLSB1(){
-        String origPath = "./src/main/resources/bmps/ladoLSB1.bmp";
-        String destPath = "./src/main/resources/bmps/hidden";
-
-        BufferedImage origImg = ImageUtils.readImage(origPath);
-        byte[] decodedBytes = encoder.decodeImage(origImg,1);
-        File decoded = fileEncoder.decodeFile(decodedBytes,destPath);
-
-    }
 
     @Test
-    public void testCustomLSB1(){
+    public void testLadoWithReadme(){
         String origImagePath = "./src/main/resources/bmps/lado.bmp";
         String filePath = "./src/main/resources/bmps/README.txt";
         String alteredImagePath = "./src/main/resources/bmps/ladoWithReadme.bmp";
         String recoveredFilePath = "./src/main/resources/bmps/RecoveredReadme";
 
+        testCustomLSB(origImagePath,filePath,alteredImagePath,recoveredFilePath,1);
+    }
+
+    @Test
+    public void testLadoWithTPE(){
+        String origImagePath = "./src/main/resources/bmps/lado.bmp";
+        String filePath = "./src/main/resources/bmps/TPE.pdf";
+        String alteredImagePath = "./src/main/resources/bmps/ladoTPE1.bmp";
+        String recoveredFilePath = "./src/main/resources/bmps/recTPE1";
+
+        testCustomLSB(origImagePath,filePath,alteredImagePath,recoveredFilePath,1);
+    }
+
+    public void testCustomLSB(String origImagePath, String filePath, String alteredImagePath, String recoveredFilePath, int bitsToUse){
+
+        String[] splitExtension = filePath.split("\\.");
+        String extension = splitExtension[splitExtension.length-1];
         BufferedImage origImage = ImageUtils.readImage(origImagePath);
         byte[] encodedFile = fileEncoder.encodeFile(filePath);
-        BufferedImage alteredImg = encoder.encodeInImage(origImage,encodedFile,1);
+        BufferedImage alteredImg = encoder.encodeInImage(origImage,encodedFile,bitsToUse);
         ImageUtils.writeImage(alteredImg,alteredImagePath);
 
         BufferedImage recoveredAlteredImage = ImageUtils.readImage(alteredImagePath);
-        byte[] recoveredEncodedFileBytes = encoder.decodeImage(recoveredAlteredImage,1);
+        byte[] recoveredEncodedFileBytes = encoder.decodeImage(recoveredAlteredImage,bitsToUse);
         fileEncoder.decodeFile(recoveredEncodedFileBytes,recoveredFilePath);
-        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredFilePath+".txt");
+        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredFilePath+"."+extension);
         byte[] origFileBytes = fileEncoder.getFileAsBytes(filePath);
-
 
         try {
             assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
@@ -70,6 +78,75 @@ public class FileEncoderTest {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testLadoLSB1Decodes(){
+        String ladoLSB1ImagePath =  "./src/main/resources/bmps/ladoLSB1.bmp";
+        String recoveredLadoLSB1FilePath =  "./src/main/resources/bmps/ladoLSB1Recovered";
+        String tpePath =  "./src/main/resources/bmps/TPE.pdf";
+        int bitsToUse = 1;
+        BufferedImage recoveredAlteredImage = ImageUtils.readImage(ladoLSB1ImagePath);
+        byte[] recoveredEncodedFileBytes = encoder.decodeImage(recoveredAlteredImage,bitsToUse);
+        fileEncoder.decodeFile(recoveredEncodedFileBytes,recoveredLadoLSB1FilePath);
+        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredLadoLSB1FilePath+".pdf");
+        byte[] origFileBytes = fileEncoder.getFileAsBytes(tpePath);
+
+        try {
+            assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
+                    .containsExactly(MessageDigest.getInstance("MD5").digest(origFileBytes));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testLadoLSB4Decodes(){
+        String ladoLSB4ImagePath =  "./src/main/resources/bmps/ladoLSB4.bmp";
+        String recoveredLadoLSB4FilePath =  "./src/main/resources/bmps/ladoLSB4Recovered";
+        String tpePath =  "./src/main/resources/bmps/TPE.pdf";
+        int bitsToUse = 4;
+        BufferedImage recoveredAlteredImage = ImageUtils.readImage(ladoLSB4ImagePath);
+        byte[] recoveredEncodedFileBytes = encoder.decodeImage(recoveredAlteredImage,bitsToUse);
+        fileEncoder.decodeFile(recoveredEncodedFileBytes,recoveredLadoLSB4FilePath);
+        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredLadoLSB4FilePath+".pdf");
+        byte[] origFileBytes = fileEncoder.getFileAsBytes(tpePath);
+
+        try {
+            assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
+                    .containsExactly(MessageDigest.getInstance("MD5").digest(origFileBytes));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void viewDifferences(){
+        BufferedImage good = ImageUtils.readImage("./src/main/resources/bmps/ladoLSB4.bmp");
+        BufferedImage mine = ImageUtils.readImage("./src/main/resources/bmps/lado.bmp");
+
+        System.out.println(good);
+        System.out.println(mine);
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+        for (int j = good.getHeight()-3; j < good.getHeight(); j++) {
+            for (int i = 0; i < good.getWidth(); i++) {
+//                sb.append(Integer.toBinaryString(good.getRGB(i,j)));
+//                sb.append("\n");
+//                sb.append(Integer.toBinaryString(mine.getRGB(i,j)));
+//                sb.append("\n\n");
+                sb.append(Integer.toBinaryString(good.getRGB(i,j))).append(" ");
+                sb2.append(Integer.toBinaryString(mine.getRGB(i,j))).append(" ");
+            }
+            sb.append("\n");
+            sb.append(sb2);
+            sb2.setLength(0);
+            sb.append("\n");
+            sb.append("\n");
+        }
+        System.out.println(sb.toString());
+
+        Utils.writeToFile(sb.toString(),"asda.txt");
     }
 
 }
