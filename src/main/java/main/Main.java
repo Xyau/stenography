@@ -10,7 +10,8 @@ import java.nio.ByteBuffer;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Go run the test FileEnconderTest::TestCustomLSB1 to see how to use the classes");
+        Configuration configuration = Configuration.parseOptions(args);
 
+        System.out.println("Go run the test FileEnconderTest::TestCustomLSB1 to see how to use the classes");
     }
 }
