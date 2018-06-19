@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 public class Main {
     public static void main(String[] args) {
         System.out.println("asda");
+        System.out.println(Integer.MAX_VALUE<<1);
         try {
             BufferedImage image = ImageIO.read(new File("./src/main/resources/bmps/t.bmp"));
 
