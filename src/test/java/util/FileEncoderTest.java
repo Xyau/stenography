@@ -3,11 +3,9 @@ package util;
 import main.Encoder;
 import main.FileEncoder;
 import org.junit.jupiter.api.Test;
-import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.Writer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -57,8 +55,17 @@ public class FileEncoderTest {
         testCustomLSB(origImagePath,filePath,alteredImagePath,recoveredFilePath,1);
     }
 
-    public void testCustomLSB(String origImagePath, String filePath, String alteredImagePath, String recoveredFilePath, int bitsToUse){
+    @Test
+    public void testLadoWithLSBE(){
+        String origImagePath = "./src/main/resources/bmps/lado.bmp";
+        String filePath = "./src/main/resources/bmps/itba.png";
+        String alteredImagePath = "./src/main/resources/bmps/ladoITBA.bmp";
+        String recoveredFilePath = "./src/main/resources/bmps/recITBA";
 
+        testLSBE(origImagePath,filePath,alteredImagePath,recoveredFilePath);
+    }
+
+    public void testCustomLSB(String origImagePath, String filePath, String alteredImagePath, String recoveredFilePath, int bitsToUse){
         String[] splitExtension = filePath.split("\\.");
         String extension = splitExtension[splitExtension.length-1];
         BufferedImage origImage = ImageUtils.readImage(origImagePath);
@@ -68,6 +75,28 @@ public class FileEncoderTest {
 
         BufferedImage recoveredAlteredImage = ImageUtils.readImage(alteredImagePath);
         byte[] recoveredEncodedFileBytes = encoder.decodeImage(recoveredAlteredImage,bitsToUse);
+        fileEncoder.decodeFile(recoveredEncodedFileBytes,recoveredFilePath);
+        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredFilePath+"."+extension);
+        byte[] origFileBytes = fileEncoder.getFileAsBytes(filePath);
+
+        try {
+            assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
+                    .containsExactly(MessageDigest.getInstance("MD5").digest(origFileBytes));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testLSBE(String origImagePath, String filePath, String alteredImagePath, String recoveredFilePath){
+        String[] splitExtension = filePath.split("\\.");
+        String extension = splitExtension[splitExtension.length-1];
+        BufferedImage origImage = ImageUtils.readImage(origImagePath);
+        byte[] encodedFile = fileEncoder.encodeFile(filePath);
+        BufferedImage alteredImg = encoder.encodeInImageLSBE(origImage,encodedFile);
+        ImageUtils.writeImage(alteredImg,alteredImagePath);
+
+        BufferedImage recoveredAlteredImage = ImageUtils.readImage(alteredImagePath);
+        byte[] recoveredEncodedFileBytes = encoder.decodeImageLSBE(recoveredAlteredImage);
         fileEncoder.decodeFile(recoveredEncodedFileBytes,recoveredFilePath);
         byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredFilePath+"."+extension);
         byte[] origFileBytes = fileEncoder.getFileAsBytes(filePath);
@@ -120,10 +149,31 @@ public class FileEncoderTest {
         }
     }
 
+    @Test
+    public void testLadoLSBEDecodes(){
+        String ladoLSBEImagePath =  "./src/main/resources/bmps/ladoLSBE.bmp";
+        String recoveredLadoLSBEFilePath =  "./src/main/resources/bmps/ladoLSBERecovered";
+        String itbaImgPath =  "./src/main/resources/bmps/itba.png";
 
+        BufferedImage recoveredAlteredImage = ImageUtils.readImage(ladoLSBEImagePath);
+        byte[] recoveredEncodedFileBytes = encoder.decodeImageLSBE(recoveredAlteredImage);
+        fileEncoder.decodeFile(recoveredEncodedFileBytes,recoveredLadoLSBEFilePath);
+        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredLadoLSBEFilePath+".png");
+        byte[] origFileBytes = fileEncoder.getFileAsBytes(itbaImgPath);
+
+        try {
+            assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
+                    .containsExactly(MessageDigest.getInstance("MD5").digest(origFileBytes));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Test
     public void viewDifferences(){
-        BufferedImage good = ImageUtils.readImage("./src/main/resources/bmps/ladoLSB4.bmp");
-        BufferedImage mine = ImageUtils.readImage("./src/main/resources/bmps/lado.bmp");
+        BufferedImage good = ImageUtils.readImage("./src/main/resources/bmps/lado.bmp");
+        BufferedImage mine = ImageUtils.readImage("./src/main/resources/bmps/ladoLSBE.bmp");
 
         System.out.println(good);
         System.out.println(mine);

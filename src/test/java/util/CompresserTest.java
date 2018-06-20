@@ -1,9 +1,15 @@
 package util;
 
+import javafx.util.Pair;
 import main.Compresser;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 
 public class CompresserTest {
 
@@ -62,6 +68,28 @@ public class CompresserTest {
         assertThat(Compresser.getByte(x,1)).isEqualTo(0);
         assertThat(Compresser.getByte(x,2)).isEqualTo(0);
         assertThat(Compresser.getByte(x,3)).isEqualTo(255);
+
+        x = -1 ^ 255;
+        assertThat(Compresser.getByte(x,0)).isEqualTo(0);
+        assertThat(Compresser.getByte(x,1)).isEqualTo(255);
+        assertThat(Compresser.getByte(x,2)).isEqualTo(255);
+        assertThat(Compresser.getByte(x,3)).isEqualTo(255);
+
     }
 
+    @Test
+    public void testCompressLSBE(){
+        assertThat(Compresser.compressBitsLSBE(Lists.list(new Pair<>(0b011,3),new Pair<>(0b011,3),
+                new Pair<>(0b111,3), new Pair<>(0b000,3),
+                new Pair<>(0b1010,4))))
+                .isEqualTo(new byte[]{(byte) 0b01101111, (byte) 0b10001010});
+        assertThat(Compresser.compressBitsLSBE(Lists.list(new Pair<>(0b1,1),new Pair<>(0b0,1),
+                new Pair<>(0b1,1), new Pair<>(0b0,1),
+                new Pair<>(0b1010,4))))
+                .isEqualTo(new byte[]{(byte) 0b10101010});
+        assertThat(Compresser.compressBitsLSBE(Lists.list(new Pair<>(0b0101,4),new Pair<>(0b1010,4))))
+                .isEqualTo(new byte[]{(byte) 0b01011010});
+        assertThat(Compresser.compressBitsLSBE(Lists.list(new Pair<>(0b11110101,4),new Pair<>(0b11001010,4))))
+                .isEqualTo(new byte[]{(byte) 0b01011010});
+    }
 }

@@ -62,5 +62,58 @@ public class EncoderTest {
         assertThat(encoder.decodeRGB(0b11111111111111101111111011111110,1)).isEqualTo(0b000);
         assertThat(encoder.decodeRGB(65793,1)).isEqualTo(7);
         assertThat(encoder.decodeRGB(~65793,1)).isEqualTo(0);
+
+    }
+
+    @Test
+    public void testDecodeLSEB(){
+        assertThat(encoder.decodeRGBLSE(0b11111111111101111111111011111111)).isEqualTo(2);
+        assertThat(encoder.decodeRGBLSE(0b11111111111101111111111111111110)).isEqualTo(1);
+        assertThat(encoder.decodeRGBLSE(0b11111111111111101111101111111111)).isEqualTo(2);
+        assertThat(encoder.decodeRGBLSE(0b11111111111111111111111011111110)).isEqualTo(1);
+        assertThat(encoder.decodeRGBLSE(0b11111111111111101111111011111110)).isEqualTo(0);
+        assertThat(encoder.decodeRGBLSE(0b11111111111111101111111111111110)).isEqualTo(2);
+        assertThat(encoder.decodeRGBLSE(0b11111111111111101111111011111111)).isEqualTo(4);
+    }
+
+
+    @Test
+    public void testCount255or254Bytes(){
+        assertThat(encoder.count254or255Bytes(0)).isEqualTo(0);
+        assertThat(encoder.count254or255Bytes(0b00000000111111111111111111111111)).isEqualTo(3);
+        assertThat(encoder.count254or255Bytes(0b11111111)).isEqualTo(1);
+        assertThat(encoder.count254or255Bytes(0b11111110)).isEqualTo(1);
+        assertThat(encoder.count254or255Bytes(0b111111110000000011111111)).isEqualTo(2);
+        assertThat(encoder.count254or255Bytes(0b111111110000000011111111)).isEqualTo(2);
+        assertThat(encoder.count254or255Bytes(0b000000001111111111111111)).isEqualTo(2);
+        assertThat(encoder.count254or255Bytes(0b11111111000000001111111111111111)).isEqualTo(2);
+        assertThat(encoder.count254or255Bytes(0b00000000000000001111111111111111)).isEqualTo(2);
+    }
+
+    // 00000000
+    // 11111111
+    @Test
+    public void testEncodeRGBLSE(){
+        assertThat(encoder.encodeRGBLSB(0,new byte[]{0},-1))
+                .isEqualTo(0b11111111111111101111111011111110);
+
+        assertThat(encoder.encodeRGBLSB(0,new byte[]{(byte) 0b10111111 },0b11111111111111111111011011111110))
+                .isEqualTo(0b11111111111111101111011011111111);
+
+        assertThat(encoder.encodeRGBLSB(0,new byte[]{(byte) 0b11111111 },0))
+                .isEqualTo(0);
+
+        assertThat(encoder.encodeRGBLSB(2,new byte[]{(byte) 0b00101111 },0b111111111111110111111110))
+                .isEqualTo(0b111111101111110111111111);
+    }
+
+    @Test
+    public void testEncodeDecodeLSE(){
+        BufferedImage bufferedImage = ImageUtils.createImage(255,10,10);
+        byte[] payload = "In the off ".getBytes();
+        BufferedImage altered = encoder.encodeInImageLSBE(bufferedImage,payload);
+
+        byte[] recovered = encoder.decodeImageLSBE(altered);
+        assertThat(recovered).startsWith(payload);
     }
 }

@@ -1,5 +1,10 @@
 package main;
 
+import javafx.util.Pair;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Compresser {
     public static int getMask(int bitsToUse, int byteNumber){
         int[] bits = {1,3,7,15,31,63,127};
@@ -43,6 +48,23 @@ public class Compresser {
         int mask = 255<<(byteNumber*8);
         int x =(num&mask)>>(byteNumber*8);
         return x==-1?255:x;
+    }
+
+    public static byte[] compressBitsLSBE(List<Pair<Integer, Integer>> infoBits) {
+        int payloadOffset = 0;
+        int totalSizeInBits = infoBits.stream().mapToInt(Pair::getValue).sum();
+        byte[] compressedPayload = new byte[((int) Math.ceil(totalSizeInBits / 8.0))];
+        for(Pair<Integer,Integer> payloadBitsPair : infoBits) {
+            for (int i = 0; i < payloadBitsPair.getValue(); i++) {
+                int payloadMaskShift = ((payloadBitsPair.getValue()) - i -1);
+                int mask = 1 << payloadMaskShift;
+                int bit = (mask & payloadBitsPair.getKey()) >> payloadMaskShift;
+                bit = bit << 7 - payloadOffset % 8;
+                compressedPayload[payloadOffset / 8] = new Integer(compressedPayload[payloadOffset / 8] | bit).byteValue();
+                payloadOffset++;
+            }
+        }
+        return compressedPayload;
     }
 }
 
