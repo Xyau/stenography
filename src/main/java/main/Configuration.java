@@ -214,7 +214,8 @@ public class Configuration {
         AES128,
         AES192,
         AES256,
-        DES
+        DES,
+        NO_ENCRYPTION,
     }
 
     public enum Method {
