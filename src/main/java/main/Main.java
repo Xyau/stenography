@@ -1,6 +1,5 @@
 package main;
 
-import main.encryptors.NoChangeEncryptor;
 import util.ImageUtils;
 import util.Utils;
 
