@@ -81,7 +81,7 @@ public class Utils {
             case AES_256:
                 return applyPaddle(key,32);
             case DES:
-                return applyPaddle(key,16);
+                return applyPaddle(key,8);
             case NO_ENCRYPTION:
                 return key;
         }
@@ -97,5 +97,19 @@ public class Utils {
             key = key + key.charAt(i%currentSize);
         }
         return key;
+    }
+
+    public static String getMainAlgorithm(Configuration.Algorithm algorithm) {
+        switch (algorithm) {
+            case AES_128:
+                return "aes";
+            case AES_192:
+                return "aes";
+            case AES_256:
+                return "aes";
+            case DES:
+                return "des";
+        }
+        throw new IllegalStateException();
     }
 }

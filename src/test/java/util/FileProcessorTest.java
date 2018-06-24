@@ -20,19 +20,21 @@ public class FileProcessorTest {
         LSBType lsbType = LSBType.LSB1;
         String imagePath = "./src/main/resources/bmps/penguin.bmp";
         String inputFilePath = "./src/main/resources/bmps/itba.png";
-        String outputFilePath = "./src/main/resources/bmps/penguinWithItba";
+        String outputImgPath = "./src/main/resources/bmps/penguinWithItba.bmp";
         String recoveredFilePath = "./src/main/resources/bmps/recoveredItba";
-        Configuration.Algorithm algorithm = Configuration.Algorithm.AES_128;
+        Configuration.Algorithm algorithm = Configuration.Algorithm.DES;
         Configuration.Method method = Configuration.Method.ECB;
         String password = "hey";
 
-        Configuration encriptConfiguration = buildEncriptConfiguration(lsbType,imagePath, inputFilePath,outputFilePath,
+        Configuration encriptConfiguration = buildEncriptConfiguration(lsbType,imagePath, inputFilePath,outputImgPath,
                 algorithm,method,password);
 
         fileProcessor.processFile(encriptConfiguration);
 
-        Configuration decriptConfiguration = buildDecriptConfiguration(lsbType, imagePath, recoveredFilePath,
+        Configuration decriptConfiguration = buildDecriptConfiguration(lsbType,outputImgPath, recoveredFilePath,
                 recoveredFilePath,algorithm,method,password);
+
+        fileProcessor.processFile(decriptConfiguration);
 
         byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredFilePath+".png");
         byte[] origFileBytes = fileEncoder.getFileAsBytes(inputFilePath);

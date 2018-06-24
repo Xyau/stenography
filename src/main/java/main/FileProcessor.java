@@ -16,7 +16,7 @@ public class FileProcessor {
         String pass = configuration.getPassword();
         String paddedPass = Utils.applyPaddle(pass,configuration.getAlgorithm());
         String initVectpor = "asda";
-        String algorithm = configuration.getAlgorithm().toString();
+        String algorithm = Utils.getMainAlgorithm(configuration.getAlgorithm());
         String method = configuration.getMethod().toString();
 
         switch (configuration.getFunction()){

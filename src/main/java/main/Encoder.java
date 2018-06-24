@@ -32,9 +32,9 @@ public class Encoder {
     public BufferedImage encodeInImage(BufferedImage image, byte[] payload, LSBType lsbType){
         switch (lsbType) {
             case LSB1:
-                return encodeInImage(image,payload,LSBType.LSB1);
+                return encodeInImage(image,payload,1);
             case LSB4:
-                return encodeInImage(image,payload,LSBType.LSB4);
+                return encodeInImage(image,payload,4);
             case LSBE:
                 return encodeInImageLSBE(image,payload);
         }

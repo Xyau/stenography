@@ -16,11 +16,13 @@ public class EncryptorTest {
         testEncryption("hey there", "123","1234567890123456","aes","cbc");
     }
     @Test
-    public void AESTest(){
-        String algoritm = Configuration.Algorithm.AES_128.toString();
+    public void AES196Test(){
+        String algoritm = Utils.getMainAlgorithm(Configuration.Algorithm.AES_192);
         String method = Configuration.Method.CBC.toString();
-        testEncryption("hey there", "passpasspasspasspasspasspasspass",
-                "1234567890123456","aes128","ecb");
+        String password = "passs";
+        String paddedPass = Utils.applyPaddle(password,Configuration.Algorithm.AES_192);
+        testEncryption("hey there", paddedPass,
+                "1234567890123456","aes","ecb");
     }
 
     public void testEncryption(String msg, String pasword, String initVector, String algorithm, String mode){
