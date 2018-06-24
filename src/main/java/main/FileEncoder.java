@@ -7,7 +7,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 
 public class FileEncoder {
-    public byte[] encodeFile(String path){
+    public byte[] encodeSizeAndExtension(String path){
         byte[] fileBytes = getFileAsBytes(path);
         File file = new File(path);
         byte[] size = intToByteArray((int) file.length());
@@ -20,7 +20,23 @@ public class FileEncoder {
         return encodedFile;
     }
 
-    public File decodeFile(byte[] encodedFile,String path){
+    public byte[] encodeSize(byte[] bytes){
+        byte[] size = intToByteArray(bytes.length);
+        byte[] encodedBytes = new byte[bytes.length+4];
+        System.arraycopy(size,0,encodedBytes,0,size.length);
+        System.arraycopy(bytes,0,encodedBytes,size.length,bytes.length);
+        return encodedBytes;
+    }
+
+    public byte[] decodeSize(byte[] bytes){
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        int size = byteBuffer.getInt();
+        byte[] fileBytes = new byte[size];
+        System.arraycopy(bytes,4,fileBytes,0,size);
+        return fileBytes;
+    }
+
+    public File decodeSizeAndExtension(byte[] encodedFile, String path){
         ByteBuffer byteBuffer = ByteBuffer.wrap(encodedFile);
         int size = byteBuffer.getInt();
         byte[] fileBytes = new byte[size];

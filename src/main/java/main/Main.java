@@ -19,13 +19,8 @@ public class Main {
 
         FileEncoder fileEncoder = new FileEncoder();
         Encoder encoder = new Encoder();
-        switch (configuration.getFunction()){
-            case EMBED:
-                break;
-            case EXTRACT:
-                break;
-        }
-        if(Configuration.Function.EMBED.equals(configuration.getFunction())){
+
+         if(Configuration.Function.EMBED.equals(configuration.getFunction())){
             //we encode some info into a bmp
             String inImagePath = "./src/main/resources/bmps/lado.bmp";
             String filePath = "./src/main/resources/bmps/TPE.pdf";
@@ -33,7 +28,7 @@ public class Main {
 
             BufferedImage origImage = ImageUtils.readImage(inImagePath);
             //Encode the file lenght and the extension into the file
-            byte[] encodedFile = fileEncoder.encodeFile(filePath);
+            byte[] encodedFile = fileEncoder.encodeSizeAndExtension(filePath);
             BufferedImage alteredImg = encoder.encodeInImage(origImage,encodedFile,LSBType.LSB1);
             ImageUtils.writeImage(alteredImg,alteredImagePath);
         } else {

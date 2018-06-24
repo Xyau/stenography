@@ -1,5 +1,8 @@
 package util;
 
+import main.Configuration;
+import main.LSBType;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -67,5 +70,32 @@ public class Utils {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String applyPaddle(String key, Configuration.Algorithm algorithm){
+        switch (algorithm){
+            case AES_128:
+                return applyPaddle(key,16);
+            case AES_192:
+                return applyPaddle(key,24);
+            case AES_256:
+                return applyPaddle(key,32);
+            case DES:
+                return applyPaddle(key,16);
+            case NO_ENCRYPTION:
+                return key;
+        }
+        throw new IllegalStateException();
+    }
+
+    private static String applyPaddle(String key, int finalSize) {
+        int currentSize = key.length();
+        if (currentSize > finalSize) {
+            throw new IllegalStateException("Key too big");
+        }
+        for (int i=0; i<finalSize-currentSize; i++) {
+            key = key + key.charAt(i%currentSize);
+        }
+        return key;
     }
 }

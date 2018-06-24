@@ -6,7 +6,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
 public class Encryptor {
-    public static String encrypt(String password, String initVector, String message, String algorithm, String mode) {
+    public static byte[] encrypt(String password, String initVector, byte[] message, String algorithm,String mode) {
         try {
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes());
             SecretKeySpec skeySpec = new SecretKeySpec(password.getBytes(), algorithm);
@@ -20,10 +20,10 @@ public class Encryptor {
 
             else throw new IllegalStateException("Wrong encryption mode");
 
-            byte[] encrypted = cipher.doFinal(message.getBytes());
+            byte[] encrypted = cipher.doFinal(message);
             encrypted = Base64.getEncoder().encode(encrypted);
 
-            return new String(encrypted);
+            return encrypted;
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -31,12 +31,13 @@ public class Encryptor {
         return null;
     }
 
-    public static String decrypt(String password, String initVector, String encrypted, String algorithm, String mode) {
+    public static byte[] decrypt(String password, String initVector, byte[] encrypted, String algorithm, String mode) {
         try {
 
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes());
             SecretKeySpec skeySpec = new SecretKeySpec(password.getBytes(), algorithm);
             Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS5PADDING");
+
 
             if (mode.toUpperCase().equals("CBC") || mode.toUpperCase().equals("CFB") || mode.toUpperCase().equals("OFB"))
                 cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
@@ -48,7 +49,7 @@ public class Encryptor {
 
             byte[] original = cipher.doFinal(Base64.getDecoder().decode(encrypted));
 
-            return new String(original);
+            return original;
 
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -12,9 +12,10 @@ public class Configuration {
     private String inputFile;
     private String imageFile;
     private String outputFile;
-    private Stenography stenography;
-    private Encryption encryption;
+    private LSBType lsbType;
+    private Algorithm algorithm;
     private Method method;
+    private String password;
 
     public Configuration(){}
 
@@ -26,8 +27,8 @@ public class Configuration {
         options.addOption("p", true, "Image file.");
         options.addOption("out", true, "Output file.");
         options.addOption("steg", true, "Stenography method.");
-        options.addOption("a", true, "Encryption algorithm.");
-        options.addOption("m", true, "Encryption method. Options: ecb | cfb | ofb | cbc");
+        options.addOption("a", true, "Algorithm algorithm.");
+        options.addOption("m", true, "Algorithm method. Options: ecb | cfb | ofb | cbc");
         options.addOption("pass", true, "Password.");
         options.addOption("h", "help", false, "Help.");
         return options;
@@ -64,6 +65,7 @@ public class Configuration {
             }
             configuration.setImageFile(cmd.getOptionValue("p"));
             configuration.setOutputFile(cmd.getOptionValue("out"));
+            configuration.setPassword(cmd.getOptionValue("pass"));
 
             if (!cmd.hasOption("steg")){
                 finishWithError("No stenography method selected!");
@@ -73,22 +75,22 @@ public class Configuration {
                 finishWithError("No stenography method selected!");
             }
             configuration.setMethod(methodOptions(cmd.getOptionValue("m")));
-            configuration.setEncryption(encryptionOptions(cmd.getOptionValue("a")));
+            configuration.setAlgorithm(encryptionOptions(cmd.getOptionValue("a")));
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return configuration;
     }
 
-    private static Stenography stenographyOptions(String option){
+    private static LSBType stenographyOptions(String option){
         option = option.toUpperCase();
         switch (option){
             case "LSB1":
-                return Stenography.LSB1;
+                return LSBType.LSB1;
             case "LSB4":
-                return Stenography.LSB4;
+                return LSBType.LSB4;
             case "LSBE":
-                return Stenography.LSBE;
+                return LSBType.LSBE;
             default:
                 finishWithError("No valid Stenography method.");
                 return null;
@@ -111,17 +113,17 @@ public class Configuration {
         }
     }
 
-    private static Encryption encryptionOptions(String option){
+    private static Algorithm encryptionOptions(String option){
         option = option.toUpperCase();
         switch (option){
-            case "AES128":
-                return Encryption.AES128;
-            case "AES192":
-                return Encryption.AES192;
-            case "AES256":
-                return Encryption.AES256;
+            case "AES_128":
+                return Algorithm.AES_128;
+            case "AES_192":
+                return Algorithm.AES_192;
+            case "AES_256":
+                return Algorithm.AES_256;
             case "DES":
-                return Encryption.DES;
+                return Algorithm.DES;
             default:
                 return null;
         }
@@ -159,6 +161,14 @@ public class Configuration {
         this.imageFile = imageFile;
     }
 
+    public String getPassword(){
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getOutputFile() {
         return outputFile;
     }
@@ -175,20 +185,20 @@ public class Configuration {
         this.encoder = encoder;
     }
 
-    public Stenography getStenography() {
-        return stenography;
+    public LSBType getLSBType() {
+        return lsbType;
     }
 
-    public void setStenography(Stenography stenography) {
-        this.stenography = stenography;
+    public void setStenography(LSBType lsbType) {
+        this.lsbType = lsbType;
     }
 
-    public Encryption getEncryption() {
-        return encryption;
+    public Algorithm getAlgorithm() {
+        return algorithm;
     }
 
-    public void setEncryption(Encryption encryption) {
-        this.encryption = encryption;
+    public void setAlgorithm(Algorithm algorithm) {
+        this.algorithm = algorithm;
     }
 
     public Method getMethod() {
@@ -204,16 +214,11 @@ public class Configuration {
         EXTRACT
     }
 
-    public enum Stenography{
-        LSB1,
-        LSB4,
-        LSBE
-    }
 
-    public enum Encryption{
-        AES128,
-        AES192,
-        AES256,
+    public enum Algorithm {
+        AES_128,
+        AES_192,
+        AES_256,
         DES,
         NO_ENCRYPTION,
     }
