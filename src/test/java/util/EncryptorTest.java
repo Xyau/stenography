@@ -27,8 +27,8 @@ public class EncryptorTest {
 
     public void testEncryption(String msg, String pasword, String initVector, String algorithm, String mode){
         byte[] msgToEncrypt = msg.getBytes();
-        byte[] encrypted = Encryptor.encrypt(pasword, initVector, msgToEncrypt, algorithm, mode);
-        byte[] decrypted = Encryptor.decrypt(pasword, initVector, encrypted, algorithm, mode);
+        byte[] encrypted = Encryptor.encrypt(pasword, msgToEncrypt, algorithm, mode, 16);
+        byte[] decrypted = Encryptor.decrypt(pasword, encrypted, algorithm, mode, 16);
         assertThat(decrypted).isEqualTo(msgToEncrypt);
     }
 

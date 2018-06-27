@@ -71,11 +71,8 @@ public class Configuration {
                 finishWithError("No stenography method selected!");
             }
             configuration.setStenography(stenographyOptions(cmd.getOptionValue("steg")));
-            if (cmd.hasOption("steg")){
-                finishWithError("No stenography method selected!");
-            }
             configuration.setMethod(methodOptions(cmd.getOptionValue("m")));
-            configuration.setAlgorithm(encryptionOptions(cmd.getOptionValue("a")));
+            configuration.setAlgorithm(encryptionOptions(cmd.getOptionValue("a"), configuration.getPassword() != null));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -98,6 +95,9 @@ public class Configuration {
     }
 
     private static Method methodOptions(String option){
+        if (option == null){
+            return Method.CBC; // Default.
+        }
         option = option.toUpperCase();
         switch (option){
             case "CBC":
@@ -109,22 +109,31 @@ public class Configuration {
             case "OFB":
                 return Method.OFB;
             default:
+                finishWithError("No valid encryption algorithm.");
                 return null;
         }
     }
 
-    private static Algorithm encryptionOptions(String option){
+    private static Algorithm encryptionOptions(String option, boolean hasPass){
+        if (option == null){
+            if (hasPass){
+                return Algorithm.AES_128;
+            }else{
+                return Algorithm.NO_ENCRYPTION;
+            }
+        }
         option = option.toUpperCase();
         switch (option){
-            case "AES_128":
+            case "AES128":
                 return Algorithm.AES_128;
-            case "AES_192":
+            case "AES192":
                 return Algorithm.AES_192;
-            case "AES_256":
+            case "AES256":
                 return Algorithm.AES_256;
             case "DES":
                 return Algorithm.DES;
             default:
+                finishWithError("No valid encryption algorithm.");
                 return null;
         }
     }

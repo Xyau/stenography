@@ -1,17 +1,23 @@
 package main;
+import util.Utils;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
 
+import java.security.MessageDigest;
 import java.util.Base64;
 
-public class Encryptor {
-    public static byte[] encrypt(String password, String initVector, byte[] message, String algorithm,String mode) {
-        try {
-            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes());
-            SecretKeySpec skeySpec = new SecretKeySpec(password.getBytes(), algorithm);
-            Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS5PADDING");
+import static util.Utils.EVP_BytesToKey;
 
+public class Encryptor {
+    public static byte[] encrypt(String pass, byte[] message, String algorithm,String mode, Integer blockSize) {
+        try {
+            Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS5PADDING");
+            byte[][] keyAndIV = EVP_BytesToKey(blockSize, cipher.getBlockSize(), MessageDigest.getInstance("SHA-256"), pass.getBytes(), Utils.ITERATIONS);
+            IvParameterSpec iv = new IvParameterSpec(keyAndIV[Utils.INDEX_IV]);
+            SecretKeySpec skeySpec = new SecretKeySpec(keyAndIV[Utils.INDEX_KEY], algorithm);
             if (mode.toUpperCase().equals("CBC") || mode.toUpperCase().equals("CFB") || mode.toUpperCase().equals("OFB"))
                 cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
 
@@ -21,7 +27,6 @@ public class Encryptor {
             else throw new IllegalStateException("Wrong encryption mode");
 
             byte[] encrypted = cipher.doFinal(message);
-            encrypted = Base64.getEncoder().encode(encrypted);
 
             return encrypted;
 
@@ -31,23 +36,19 @@ public class Encryptor {
         return null;
     }
 
-    public static byte[] decrypt(String password, String initVector, byte[] encrypted, String algorithm, String mode) {
+    public static byte[] decrypt(String pass, byte[] encrypted, String algorithm, String mode, Integer blockSize) {
         try {
-
-            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes());
-            SecretKeySpec skeySpec = new SecretKeySpec(password.getBytes(), algorithm);
-            Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS5PADDING");
-
-
+            Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/NoPadding");
+            byte[][] keyAndIV = EVP_BytesToKey(blockSize, cipher.getBlockSize(), MessageDigest.getInstance("SHA-256"), pass.getBytes(), Utils.ITERATIONS);
+            IvParameterSpec iv = new IvParameterSpec(keyAndIV[Utils.INDEX_IV]);
+            SecretKeySpec skeySpec = new SecretKeySpec(keyAndIV[Utils.INDEX_KEY], algorithm);
             if (mode.toUpperCase().equals("CBC") || mode.toUpperCase().equals("CFB") || mode.toUpperCase().equals("OFB"))
                 cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
-
             else if (mode.toUpperCase().equals("ECB"))
                 cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-
             else throw new IllegalStateException("Wrong encryption mode");
 
-            byte[] original = cipher.doFinal(Base64.getDecoder().decode(encrypted));
+            byte[] original = cipher.doFinal(encrypted);
 
             return original;
 
