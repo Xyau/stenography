@@ -3,7 +3,6 @@ package main;
 import javafx.util.Pair;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Compresser {
     public static int getMask(int bitsToUse, int byteNumber){

@@ -2,10 +2,7 @@ package util;
 
 import org.junit.jupiter.api.Test;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-
-import static org.assertj.core.api.Assertions.*;
 
 public class UtilsTest {
 

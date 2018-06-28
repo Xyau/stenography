@@ -1,6 +1,5 @@
 package main;
 
-import javafx.util.Pair;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;

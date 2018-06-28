@@ -1,10 +1,8 @@
 package util;
 
-import main.Compresser;
 import main.Encoder;
 import org.junit.jupiter.api.Test;
 import java.awt.image.BufferedImage;
-import java.io.UnsupportedEncodingException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

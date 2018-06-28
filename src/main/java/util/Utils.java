@@ -1,8 +1,6 @@
 package util;
 
-import javafx.util.Pair;
 import main.Configuration;
-import main.LSBType;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -12,9 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class Utils {
     /*
@@ -116,7 +112,7 @@ public class Utils {
         return "none";
     }
 
-    public static Integer getBlockSize(Configuration.Algorithm algorithm) {
+    public static Integer getKeySize(Configuration.Algorithm algorithm) {
         switch (algorithm) {
             case AES_128:
                 return 16;
@@ -125,7 +121,7 @@ public class Utils {
             case AES_256:
                 return 32;
             case DES:
-                return 64;
+                return 8;
         }
         return 0;
     }

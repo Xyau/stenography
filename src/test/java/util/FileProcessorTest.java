@@ -10,6 +10,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class FileProcessorTest {
     FileProcessor fileProcessor = new FileProcessor();
@@ -29,12 +30,20 @@ public class FileProcessorTest {
         Configuration encriptConfiguration = buildEncriptConfiguration(lsbType,imagePath, inputFilePath,outputImgPath,
                 algorithm,method,password);
 
-        fileProcessor.processFile(encriptConfiguration);
+        try {
+            fileProcessor.processFile(encriptConfiguration);
+        } catch (Exception e) {
+            fail("Exception");
+        }
 
         Configuration decriptConfiguration = buildDecriptConfiguration(lsbType,outputImgPath, recoveredFilePath,
                 recoveredFilePath,algorithm,method,password);
 
-        fileProcessor.processFile(decriptConfiguration);
+        try {
+            fileProcessor.processFile(decriptConfiguration);
+        } catch (Exception e) {
+            fail("Exception");
+        }
 
         byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredFilePath+".png");
         byte[] origFileBytes = fileEncoder.getFileAsBytes(inputFilePath);
