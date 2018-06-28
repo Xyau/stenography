@@ -35,7 +35,7 @@ public class Encryptor {
     }
 
     public static byte[] decrypt(String pass, byte[] encrypted, String algorithm, String mode, Integer keySize) throws InvalidAlgorithmParameterException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/PKCS5PADDING");
+        Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/NoPadding");
         byte[][] keyAndIV = EVP_BytesToKey(keySize, cipher.getBlockSize(), MessageDigest.getInstance("SHA-256"), pass.getBytes(), Utils.ITERATIONS);
         IvParameterSpec iv = new IvParameterSpec(keyAndIV[Utils.INDEX_IV]);
         SecretKeySpec skeySpec = new SecretKeySpec(keyAndIV[Utils.INDEX_KEY], algorithm);

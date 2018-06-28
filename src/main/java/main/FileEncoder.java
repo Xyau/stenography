@@ -27,17 +27,23 @@ public class FileEncoder {
         return encodedBytes;
     }
 
-    public byte[] decodeSize(byte[] bytes){
+    public byte[] decodeSize(byte[] bytes) throws WrongSizeException {
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
         int size = byteBuffer.getInt();
+        if (size > bytes.length){
+            throw new WrongSizeException();
+        }
         byte[] fileBytes = new byte[size];
         System.arraycopy(bytes,4,fileBytes,0,size);
         return fileBytes;
     }
 
-    public File decodeSizeAndExtension(byte[] encodedFile, String path){
+    public File decodeSizeAndExtension(byte[] encodedFile, String path) throws WrongSizeException {
         ByteBuffer byteBuffer = ByteBuffer.wrap(encodedFile);
         int size = byteBuffer.getInt();
+        if (size > encodedFile.length){
+            throw new WrongSizeException();
+        }
         byte[] fileBytes = new byte[size];
         System.arraycopy(encodedFile,4,fileBytes,0,size);
         byte[] extension = new byte[encodedFile.length-4-size];

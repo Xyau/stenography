@@ -2,6 +2,7 @@ package util;
 
 import main.Encoder;
 import main.FileEncoder;
+import main.WrongSizeException;
 import org.junit.jupiter.api.Test;
 
 import java.awt.image.BufferedImage;
@@ -10,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class FileEncoderTest {
     FileEncoder fileEncoder = new FileEncoder();
@@ -23,14 +25,16 @@ public class FileEncoderTest {
         byte[] origFileBytes = fileEncoder.getFileAsBytes(orig);
         byte[] encodedFileBytes = fileEncoder.encodeSizeAndExtension(orig);
 
-        File decodedFile = fileEncoder.decodeSizeAndExtension(encodedFileBytes,copy);
-
-        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(decodedFile.getPath());
         try {
+            File decodedFile = fileEncoder.decodeSizeAndExtension(encodedFileBytes,copy);
+
+            byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(decodedFile.getPath());
             assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
             .containsExactly(MessageDigest.getInstance("MD5").digest(origFileBytes));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        } catch (Exception e){
+            fail("Exception");
         }
     }
 
@@ -75,15 +79,17 @@ public class FileEncoderTest {
 
         BufferedImage recoveredAlteredImage = ImageUtils.readImage(alteredImagePath);
         byte[] recoveredEncodedFileBytes = encoder.decodeImage(recoveredAlteredImage,bitsToUse);
-        fileEncoder.decodeSizeAndExtension(recoveredEncodedFileBytes,recoveredFilePath);
-        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredFilePath+"."+extension);
-        byte[] origFileBytes = fileEncoder.getFileAsBytes(filePath);
 
         try {
+            fileEncoder.decodeSizeAndExtension(recoveredEncodedFileBytes,recoveredFilePath);
+            byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredFilePath+"."+extension);
+            byte[] origFileBytes = fileEncoder.getFileAsBytes(filePath);
             assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
                     .containsExactly(MessageDigest.getInstance("MD5").digest(origFileBytes));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        } catch (Exception e){
+            fail("exception");
         }
     }
 
@@ -97,15 +103,17 @@ public class FileEncoderTest {
 
         BufferedImage recoveredAlteredImage = ImageUtils.readImage(alteredImagePath);
         byte[] recoveredEncodedFileBytes = encoder.decodeImageLSBE(recoveredAlteredImage);
-        fileEncoder.decodeSizeAndExtension(recoveredEncodedFileBytes,recoveredFilePath);
-        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredFilePath+"."+extension);
-        byte[] origFileBytes = fileEncoder.getFileAsBytes(filePath);
 
         try {
+            fileEncoder.decodeSizeAndExtension(recoveredEncodedFileBytes,recoveredFilePath);
+            byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredFilePath+"."+extension);
+            byte[] origFileBytes = fileEncoder.getFileAsBytes(filePath);
             assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
                     .containsExactly(MessageDigest.getInstance("MD5").digest(origFileBytes));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        } catch (Exception e){
+            fail("exception");
         }
     }
 
@@ -117,15 +125,17 @@ public class FileEncoderTest {
         int bitsToUse = 1;
         BufferedImage recoveredAlteredImage = ImageUtils.readImage(ladoLSB1ImagePath);
         byte[] recoveredEncodedFileBytes = encoder.decodeImage(recoveredAlteredImage,bitsToUse);
-        fileEncoder.decodeSizeAndExtension(recoveredEncodedFileBytes,recoveredLadoLSB1FilePath);
-        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredLadoLSB1FilePath+".pdf");
-        byte[] origFileBytes = fileEncoder.getFileAsBytes(tpePath);
 
         try {
+            fileEncoder.decodeSizeAndExtension(recoveredEncodedFileBytes,recoveredLadoLSB1FilePath);
+            byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredLadoLSB1FilePath+".pdf");
+            byte[] origFileBytes = fileEncoder.getFileAsBytes(tpePath);
             assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
                     .containsExactly(MessageDigest.getInstance("MD5").digest(origFileBytes));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        } catch (Exception e){
+            fail("exception");
         }
     }
 
@@ -137,15 +147,17 @@ public class FileEncoderTest {
         int bitsToUse = 4;
         BufferedImage recoveredAlteredImage = ImageUtils.readImage(ladoLSB4ImagePath);
         byte[] recoveredEncodedFileBytes = encoder.decodeImage(recoveredAlteredImage,bitsToUse);
-        fileEncoder.decodeSizeAndExtension(recoveredEncodedFileBytes,recoveredLadoLSB4FilePath);
-        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredLadoLSB4FilePath+".pdf");
-        byte[] origFileBytes = fileEncoder.getFileAsBytes(tpePath);
 
         try {
+            fileEncoder.decodeSizeAndExtension(recoveredEncodedFileBytes,recoveredLadoLSB4FilePath);
+            byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredLadoLSB4FilePath+".pdf");
+            byte[] origFileBytes = fileEncoder.getFileAsBytes(tpePath);
             assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
                     .containsExactly(MessageDigest.getInstance("MD5").digest(origFileBytes));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        } catch (Exception e){
+            fail("exception");
         }
     }
 
@@ -157,15 +169,17 @@ public class FileEncoderTest {
 
         BufferedImage recoveredAlteredImage = ImageUtils.readImage(ladoLSBEImagePath);
         byte[] recoveredEncodedFileBytes = encoder.decodeImageLSBE(recoveredAlteredImage);
-        fileEncoder.decodeSizeAndExtension(recoveredEncodedFileBytes,recoveredLadoLSBEFilePath);
-        byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredLadoLSBEFilePath+".png");
-        byte[] origFileBytes = fileEncoder.getFileAsBytes(itbaImgPath);
 
         try {
+            fileEncoder.decodeSizeAndExtension(recoveredEncodedFileBytes,recoveredLadoLSBEFilePath);
+            byte[] recoveredFileBytes = fileEncoder.getFileAsBytes(recoveredLadoLSBEFilePath+".png");
+            byte[] origFileBytes = fileEncoder.getFileAsBytes(itbaImgPath);
             assertThat(MessageDigest.getInstance("MD5").digest(recoveredFileBytes))
                     .containsExactly(MessageDigest.getInstance("MD5").digest(origFileBytes));
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        } catch (Exception e){
+            fail("exception");
         }
     }
 
@@ -173,7 +187,12 @@ public class FileEncoderTest {
     public void testFileSizeEncode(){
         byte[] file = "12345678901234567890".getBytes();
         byte[] encodedFile = fileEncoder.encodeSize(file);
-        byte[] recovered = fileEncoder.decodeSize(encodedFile);
+        byte[] recovered = new byte[0];
+        try {
+            recovered = fileEncoder.decodeSize(encodedFile);
+        } catch (WrongSizeException e) {
+            fail("exception");
+        }
         assertThat(recovered).isEqualTo(file);
 
     }

@@ -29,7 +29,7 @@ public class EncryptorTest {
         try {
             encrypted = Encryptor.encrypt(pasword, msgToEncrypt, algorithm, mode, keySize);
             byte[] decrypted = Encryptor.decrypt(pasword, encrypted, algorithm, mode, keySize);
-            assertThat(decrypted).isEqualTo(msgToEncrypt);
+            assertThat(decrypted).contains(msgToEncrypt);
         } catch (Exception e) {
             e.printStackTrace();
             fail("Exception");
